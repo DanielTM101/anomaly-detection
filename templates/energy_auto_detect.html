@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="card p-4 shadow-sm">
+      <h2 class="mb-4 text-center border-bottom pb-2">Auto-Detected Energy Anomalies</h2>
+
+      <div class="text-end mb-3">
+        <button id="runAll" class="btn btn-outline-primary">
+          <i class="bi bi-search me-1"></i>📂 Scan All Files
+        </button>
+      </div>
+
+      <div id="resultsSection">
+        {% if anomalies %}
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover table-sm">
+              <thead class="table-dark">
+                <tr>
+                  <th>timestamp</th>
+                  <th>energy_consumption</th>
+                  <th>voltage</th>
+                  <th>current</th>
+                  <th>power</th>
+                  <th>solar_output</th>
+                  <th>frequency</th>
+                  <th>reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in anomalies %}
+                  <tr>
+                    <td>{{ row.timestamp }}</td>
+                    <td>{{ row.energy_consumption }}</td>
+                    <td>{{ row.voltage }}</td>
+                    <td>{{ row.current }}</td>
+                    <td>{{ row.power }}</td>
+                    <td>{{ row.solar_output }}</td>
+                    <td>{{ row.frequency }}</td>
+                    <td>{{ row.reason }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-1"></i>No anomalies found yet.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById("runAll").addEventListener("click", function () {
+  fetch("/api/energy_anomalies_all", {
+    method: "GET",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest"
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      const section = document.getElementById("resultsSection");
+      const anomalies = data.all_anomalies || [];
+
+      if (Array.isArray(anomalies) && anomalies.length > 0) {
+        let html = `
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped table-hover table-sm">
+            <thead class="table-dark">
+              <tr>
+                <th>timestamp</th>
+                <th>energy_consumption</th>
+                <th>voltage</th>
+                <th>current</th>
+                <th>power</th>
+                <th>solar_output</th>
+                <th>frequency</th>
+                <th>reason</th>
+              </tr>
+            </thead>
+            <tbody>`;
+        anomalies.forEach(row => {
+          html += `
+            <tr>
+              <td>${row.timestamp}</td>
+              <td>${row.energy_consumption}</td>
+              <td>${row.voltage}</td>
+              <td>${row.current}</td>
+              <td>${row.power}</td>
+              <td>${row.solar_output}</td>
+              <td>${row.frequency}</td>
+              <td>${row.reason}</td>
+            </tr>`;
+        });
+        html += `</tbody></table></div>`;
+        section.innerHTML = html;
+      } else {
+        section.innerHTML = `<div class="alert alert-success text-center"><i class="bi bi-check-circle me-1"></i>No anomalies found!</div>`;
+      }
+    })
+    .catch(err => {
+      alert("Error running detection");
+      console.error(err);
+    });
+});
+</script>
+{% endblock %}

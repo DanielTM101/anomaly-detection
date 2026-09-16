@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("/api/trigger_energy_anomalies", {
+    method: "POST",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest"
+    }
+  })
+  .then(response => response.json())
+  .then(data => console.log("Auto detection triggered"))
+  .catch(err => console.error("Detection error", err));
+});
+</script>
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="card p-4 shadow-sm">
+      <h1 class="text-center mb-2">Welcome, {{ current_user.username }}!</h1>
+      <p class="lead text-center text-muted">Use the tools below to upload your energy data, run automatic anomaly detection, or review network issues (admin only).</p>
+
+      <div class="d-flex justify-content-center flex-wrap gap-3 my-4">
+        <a href="{{ url_for('upload_energy') }}" class="btn btn-primary btn-lg">
+          <i class="bi bi-upload me-1"></i><br>Upload Energy
+        </a>
+        <a href="{{ url_for('energy_auto_page') }}" class="btn btn-warning btn-lg">
+          <i class="bi bi-lightning-charge me-1"></i><br>Auto Detect
+        </a>
+        <a href="{{ url_for('profile') }}" class="btn btn-success btn-lg">
+          <i class="bi bi-person-circle me-1"></i><br>Profile
+        </a>
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin_network') }}" class="btn btn-danger btn-lg">
+          <i class="bi bi-shield-lock me-1"></i><br>Network Logs
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- Hero Illustration Below the Controls -->
+      <div class="text-center mt-3">
+        <img src="{{ url_for('static', filename='dashboard_visual.svg') }}" alt="Dashboard Graphic" class="img-fluid" style="max-height: 240px;">
+      </div>
+
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

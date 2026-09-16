@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="card p-4 shadow-sm">
+      <h2 class="mb-3 text-center border-bottom pb-2">Network Anomalies (Admin Only)</h2>
+
+      {% if anomalies %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped table-hover table-sm">
+            <thead class="table-dark">
+              <tr>
+                <th>Time</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>ProtocolNum</th>
+                <th>length</th>
+                <th>SourcePort</th>
+                <th>DestinationPort</th>
+                <th>Sequence</th>
+                <th>WindowSize</th>
+                <th>syn</th>
+                <th>reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in anomalies %}
+              <tr>
+                <td>{{ row.Time }}</td>
+                <td>{{ row.Source }}</td>
+                <td>{{ row.Destination }}</td>
+                <td>{{ row.ProtocolNum }}</td>
+                <td>{{ row.length }}</td>
+                <td>{{ row.SourcePort }}</td>
+                <td>{{ row.DestinationPort }}</td>
+                <td>{{ row.Sequence }}</td>
+                <td>{{ row.WindowSize }}</td>
+                <td>{{ row.syn }}</td>
+                <td>{{ row.reason }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-info text-center">
+          <i class="bi bi-info-circle me-1"></i>No anomalies found or no CSV data available.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

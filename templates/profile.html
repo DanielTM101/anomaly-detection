@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card p-4 shadow-sm">
+      <h2 class="mb-3 text-center border-bottom pb-2">Your Profile</h2>
+
+      <p class="mb-2">
+        <strong>Username:</strong> {{ current_user.username }}
+      </p>
+      <p class="mb-2">
+        <strong>Admin:</strong>
+        <span class="badge bg-{{ 'success' if current_user.is_admin else 'secondary' }}">
+          {{ 'Yes' if current_user.is_admin else 'No' }}
+        </span>
+      </p>
+
+      <hr/>
+      <h5 class="text-muted">Recent Uploads</h5>
+<ul class="list-group">
+  {% if recent_uploads %}
+    {% for file in recent_uploads %}
+      <li class="list-group-item">
+        <i class="bi bi-file-earmark-text me-2"></i>{{ file }}
+      </li>
+    {% endfor %}
+  {% else %}
+    <li class="list-group-item text-muted">No recent uploads found.</li>
+  {% endif %}
+</ul>
+
+
+      <hr/>
+      <h5 class="text-muted">Change Password</h5>
+      <form method="POST" action="{{ url_for('change_password') }}">
+        <div class="mb-3">
+          <label for="current_password" class="form-label">Current Password</label>
+          <input type="password" class="form-control" id="current_password" name="current_password" required>
+        </div>
+        <div class="mb-3">
+          <label for="new_password" class="form-label">New Password</label>
+          <input type="password" class="form-control" id="new_password" name="new_password" required>
+        </div>
+        <button type="submit" class="btn btn-warning w-100">
+          <i class="bi bi-key me-1"></i>Change Password
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
