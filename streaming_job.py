@@ -4,11 +4,18 @@ from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 from pyspark.ml import PipelineModel
 from pyspark.sql.functions import concat_ws
 
+from config import (
+    NETWORK_MODEL_PATH,
+    NETWORK_LOG_DIR,
+    CHECKPOINT_DIR,
+    NETWORK_INPUT_DIR
+)
+
 # Load the pre-trained network anomaly detection model
-MODEL_PATH = "hdfs://192.168.56.101:9000/home/dan/project/oop_custom_network_model"
-INPUT_PATH = "file:///home/dan/project2/network_input"
-OUTPUT_PATH = "file:///home/dan/project2/logs/network_stream_logs"
-CHECKPOINT_PATH = "file:///home/dan/project2/checkpoint"
+MODEL_PATH = NETWORK_MODEL_PATH
+INPUT_PATH = f"file://{NETWORK_INPUT_DIR}"
+OUTPUT_PATH = f"file://{NETWORK_LOG_DIR}"
+CHECKPOINT_PATH = f"file://{CHECKPOINT_DIR}"
 
 # Start Spark session
 spark = SparkSession.builder.appName("NetworkAnomalyDetectionFixed").getOrCreate()

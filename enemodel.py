@@ -11,6 +11,8 @@ from custom_transformers import (
     CustomLogisticRegression
 )
 
+from config import ENERGY_DATASET_PATH, ENERGY_MODEL_PATH
+
 spark = SparkSession.builder.appName("EnergyCustomLogisticRegTraining").getOrCreate()
 
 energy_schema = StructType([
@@ -25,7 +27,7 @@ energy_schema = StructType([
 ])
 
 df = spark.read.csv(
-    "hdfs://192.168.56.101:9000/home/dan/project/energy_dataset.csv",
+    ENERGY_DATASET_PATH,
     header=True,
     schema=energy_schema
 ).dropna()
@@ -55,6 +57,6 @@ evaluator = MulticlassClassificationEvaluator(labelCol="indexedLabel", predictio
 accuracy = evaluator.evaluate(predictions)
 print(f"[EnergyModel] Accuracy: {accuracy:.3f}")
 
-model.write().overwrite().save("hdfs://192.168.56.101:9000/home/dan/project/oop_custom_energy_model")
+model.write().overwrite().save(ENERGY_MODEL_PATH)
 print("[EnergyModel] Pipeline saved successfully!")
 spark.stop()

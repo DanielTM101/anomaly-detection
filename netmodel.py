@@ -12,6 +12,8 @@ from custom_transformers import (
     CustomLogisticRegression
 )
 
+from config import NETWORK_DATASET_PATH, NETWORK_MODEL_PATH
+
 spark = SparkSession.builder.appName("NetworkCustomLogisticRegTraining").getOrCreate()
 
 network_schema = StructType([
@@ -30,7 +32,7 @@ network_schema = StructType([
 ])
 
 df = spark.read.csv(
-    "hdfs://192.168.56.101:9000/home/dan/project/train_network_anomaly_data.csv",
+    NETWORK_DATASET_PATH,
     header=True,
     schema=network_schema
 ).dropna()
@@ -60,6 +62,6 @@ eval = MulticlassClassificationEvaluator(labelCol="indexedLabel", predictionCol=
 accuracy = eval.evaluate(predictions)
 print(f"[NetworkModel] Accuracy: {accuracy:.3f}")
 
-model.write().overwrite().save("hdfs://192.168.56.101:9000/home/dan/project/oop_custom_network_model")
+model.write().overwrite().save(NETWORK_MODEL_PATH)
 print("[NetworkModel] Pipeline saved successfully!")
 spark.stop()

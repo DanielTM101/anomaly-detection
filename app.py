@@ -27,20 +27,30 @@ from flask_login import (
 
 from datetime import timedelta
 
+from config import (
+    ENERGY_INPUT_DIR,
+    ENERGY_OUTPUT_DIR,
+    DOWNLOAD_DIR,
+    ENERGY_LOG_DIR,
+    NETWORK_LOG_DIR,
+    ENERGY_MODEL_PATH,
+    SECRET_KEY
+)
+
 app = Flask(__name__) 
 
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)  # Adjust as needed
 
 
-LOCAL_ENERGY_OUTPUT = "/home/dan/project2/predictions_energy"
-csv_folder = "/home/dan/project2/energy_input"
+LOCAL_ENERGY_OUTPUT = ENERGY_OUTPUT_DIR
+csv_folder = ENERGY_INPUT_DIR
 
 
 # Configuration
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "ReplaceMeWithASecretKey!"
+app.config["SECRET_KEY"] = SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///myapp.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -51,7 +61,7 @@ login_manager.login_view = "login"
 
 os.makedirs(csv_folder, exist_ok=True)
 
-NETWORK_PREDICTIONS_FOLDER = "/home/dan/project2/logs/network_stream_logs"
+NETWORK_PREDICTIONS_FOLDER = NETWORK_LOG_DIR
 
 
 # Database Model
@@ -222,7 +232,7 @@ def upload_energy():
 # Helper Function: Detect Energy Anomalies
 
 
-MODEL_PATH = "hdfs://192.168.56.101:9000/home/dan/project/oop_custom_energy_model"
+MODEL_PATH = ENERGY_MODEL_PATH
 THRESHOLD = 75
 
 
@@ -231,9 +241,9 @@ def detect_energy_anomalies(csv_path):
     Detects energy anomalies using the custom Spark ML pipeline.
     Logs processing time and saves anomaly output and performance data.
     """
-    MODEL_PATH = "hdfs://192.168.56.101:9000/home/dan/project/oop_custom_energy_model"
+    MODEL_PATH = ENERGY_MODEL_PATH
     THRESHOLD = 75
-    LOG_DIR = "/home/dan/project2/logs/energy_processing_logs"
+    LOG_DIR = ENERGY_LOG_DIR
     os.makedirs(LOG_DIR, exist_ok=True)
 
     try:
@@ -310,7 +320,7 @@ def detect_energy_anomalies(csv_path):
         # Save anomaly output to CSV
         base = os.path.basename(csv_path)
         name, _ = os.path.splitext(base)
-        output_path = f"/home/dan/project2/downloads/{name}_anomalies.csv"
+        output_path = os.path.join(DOWNLOAD_DIR, f"{name}_anomalies.csv")
         anomalies_df.toPandas().to_csv(output_path, index=False)
 
         # === METRICS LOGGING ===
@@ -399,7 +409,7 @@ def trigger_energy_anomalies():
 @app.route("/download_energy_anomalies/<filename>")
 @login_required
 def download_energy_anomalies(filename):
-    download_dir = "/home/dan/project2/downloads"
+    download_dir = DOWNLOAD_DIR
     filepath = os.path.join(download_dir, filename)
     if os.path.exists(filepath):
         return send_file(filepath, as_attachment=True)
